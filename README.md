@@ -22,7 +22,7 @@ cool vibes dude
 # # Makespaces
 [machBar Potsdam](https://machbar-potsdam.de/)
  - nicco
- - 
+ - [machBar Community Forums](https://wilap.de)
 
 
 
