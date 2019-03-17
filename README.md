@@ -4,22 +4,25 @@
 cool vibes dude
 
 
-# Robots
+# # Robots
 
-# Startups
+# # Startups
 
-# Incubators
+# # Incubators
 
-# AI
+# # AI
 
-# Programming
+# # Programming
 
-# Hackathon
- - [AI Hackathon Berlin - Free Food, Drinks, and More](https://www.eventbrite.de/e/ai-hackathon-berlin-free-food-drinks-and-more-tickets-53174719016?err=29)
+# # Hackathon
+[AI Hackathon Berlin - Free Food, Drinks, and More](https://www.eventbrite.de/e/ai-hackathon-berlin-free-food-drinks-and-more-tickets-53174719016?err=29)
 
-# Conference
+# # Conference
 
-# Makespaces
+# # Makespaces
+[machBar Potsdam](https://machbar-potsdam.de/)
+ - nicco
+ - 
 
 
 
