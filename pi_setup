@@ -7,3 +7,5 @@
 7. Connect by ssh on WSL.
 8. Log in using the default credentials (pi raspberry)
 sudo raspi-config to configure to youre liking.
+sudo apt-get install python3-pip
+pip3 --version
