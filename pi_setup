@@ -5,3 +5,5 @@
 5. Put the card in the Pi and boot it up. Now it will hopefully connect to your Wifi.
 6. Find the IP address by using Fing on android
 7. Connect by ssh on WSL.
+8. Log in using the default credentials (pi raspberry)
+sudo raspi-config to configure to youre liking.
