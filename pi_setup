@@ -1,0 +1,22 @@
+You don't say if you have a monitor and keyboard on the Pi. 
+If you do then you can find the IP address from the command line interface with "ifconfig"
+
+For running a Pi headless I suggest:
+1. Download Raspbian rather than NOOBS (In the post christmas rush, I've found the torrent download the best)
+2. Write it to the SD card with Win32DiskImager
+3 Still on your PC, put an empty file "ssh" on the card to enable SSH. ssh.txt might work too.
+4 Still on your PC, put a file "wpa_supplicant.conf" on the card containing
+Code: Select all
+
+country=GB
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid="Your SSID Here"
+    psk="YourWifiKeyHere"
+}
+5. Put the card in the Pi and boot it up. Now it will hopefully connect to your Wifi.
+6. Find the IP address from your router setup pages, with Advanced IP Scanner on your PC or Fing on android
+7. Connect by ssh with Putty
+8. Change pi's password.
