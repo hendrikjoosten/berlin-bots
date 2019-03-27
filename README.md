@@ -8,6 +8,8 @@ cool vibes dude
 - [IoT Hub Raspberry Pi 3 Client application](https://azure.microsoft.com/de-de/resources/samples/iot-hub-python-raspberrypi-client-app/).
 - [**Smartibot**](https://www.redbull.com/int-en/smartibot-ai-cardboard-robot) – the world’s first cardboard robot packing in artificial intelligence: a robot kit to discover robotics and artificial intelligence **without having to source expensive technology or materials**. The kit itself makes it easy to create a robot out of cardboard, but Atkin is keen to stress that Smartibot can actually be made out of anything – even a potato (yes, the team have already done that) – and the AI side of things are handled by your smartphone and a Smartibot app. You just **place your smartphone in it, so it can see** (would be nice if we could stream the video from a camera in the robot to the smartphone to keep things cheap) [Fresh stuff](https://www.youtube.com/watch?v=qjd_8UMCvPQ). 
 
+ - [ROS with software packages for bots](http://www.ros.org/)
+
 # # Startups
 
 # # Incubators
@@ -49,3 +51,5 @@ Would be cool if you find somewhere pipelines using a bundle of these.
 
 # # Brainstorm
 - Make 3D printed/cardboard modified smartibots with cameras interact somehow with each other. 
+
+http://www.ros.org/
