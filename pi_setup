@@ -9,3 +9,7 @@
 sudo raspi-config to configure to youre liking.
 sudo apt-get install python3-pip
 pip3 --version
+
+add audio and camera module drivers
+
+check to make sure camera and audio hardware functions
