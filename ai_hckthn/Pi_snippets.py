@@ -4,6 +4,7 @@ import json
 import os, requests
 import numpy as np
 import time
+import requests
 
 # Initializer
 # Subscriptions
@@ -89,10 +90,10 @@ def detect_objects(img):
         data = response.read()
         r = json.loads(data.decode())
         #print(data)
-        print(r.keys())
-        print("In the image of size {} by {} pixels, {} objects were detected".format(r['metadata']['width'], r['metadata']['height'], 
-                                                                                      len(r['objects']))) 
-        print(len(r['objects']))                                                                           
+        # print(r.keys())
+        # print("In the image of size {} by {} pixels, {} objects were detected".format(r['metadata']['width'], r['metadata']['height'],
+        #                                                                               len(r['objects'])))
+        # print(len(r['objects']))
         if len(r['objects']) == '0':
             print('this happened')
             return None
@@ -100,9 +101,10 @@ def detect_objects(img):
             for i in r['objects']:
                 # acessing the rectangle key
                 found_objects.append(i['object'])
-                print('{} detected at region {}'.format(i['object'], i['rectangle']))
+                # print('{} detected at region {}'.format(i['object'], i['rectangle']))
         # print(found_objects) can be read by speakerfor
         # DRAW BOUNDING BOXES into Image with CV2?
+        print(found_objects)
         conn.close()
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
@@ -147,15 +149,6 @@ def analyze_image(img, visualFeatures='Description, Categories, Faces'):
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
 
-# Set up with image
-#body_url_image(url='https://pbs.twimg.com/profile_images/1062098998746644480/JTIpfWME_400x400.jpg')
-# set up headers
-#change_headers(contentType='application/json', api='computer_vision')
-# Calling Functions
-#describe_image(body, number_of_descriptions=3)
-#analyze_image(body)
-#print(body)
-#detect_objects(body)
 
 ## THIS IS THE PROBLEM!
 
@@ -169,7 +162,7 @@ def detect_face(img):
         # Request parameters
         'returnFaceId': 'true',
         'returnFaceLandmarks': 'false',
-        'returnFaceAttributes': 'age,gender,smile,facialHair,glasses,emotion,hair',
+        'returnFaceAttributes': 'age,gender,smile,facialHair,glasses,emotion,hair,occlusion',
         'recognitionModel': 'recognition_01',
         'returnRecognitionModel': 'false',
     })
@@ -180,10 +173,10 @@ def detect_face(img):
         response = conn.getresponse()
         data = response.read()
         conn.close()
-        #print(data)
+        # print(data)
         r = json.loads(data.decode())
     
-        print('{} face(s) were found'.format(len(r)))
+        # print('{} face(s) were found'.format(len(r)))
 
         for face_info in r:
             attributes = face_info['faceAttributes']
@@ -194,8 +187,13 @@ def detect_face(img):
                                                                             attributes['age'], 
                                                                             list(attributes['emotion'].keys())[highest_emotion_index],
                                                                            int(max(attributes['emotion'].values())*100))
-            print(info)
-            
+            # print(info)
+            # print(attributes['emotion'])
+            print(attributes['occlusion']) # eyeOccluded
+            for emotion, value in iter(attributes['emotion'].items()):
+                if value > 0.0:
+                    print(emotion)
+            # print(list(attributes['emotion'].keys())[highest_emotion_index])
     except Exception as e:
         print("[Errno {0}] {1}".format(e.errno, e.strerror))
 
@@ -528,3 +526,78 @@ def observe():
     analyze_image(body)
     body = open('/home/pi/Robuzure/me.png','rb')
     describe_image(body)
+
+
+def detect_local_face(img):
+    '''global `info`, describes age, gender and emotion'''
+    global info, r
+
+    """Find attributes of a human face age, gender, emotions etc."""
+    params = urllib.parse.urlencode({
+        # Request parameters
+        'returnFaceId': 'true',
+        'returnFaceLandmarks': 'false',
+        'returnFaceAttributes': 'age,gender,smile,facialHair,glasses,emotion,hair,occlusion',
+        'recognitionModel': 'recognition_01',
+        'returnRecognitionModel': 'false',
+    })
+
+    try:
+        conn = http.client.HTTPSConnection('westeurope.api.cognitive.microsoft.com')
+        conn.request("POST", "/face/v1.0/detect?%s" % params, img, headers)
+        response = conn.getresponse()
+        data = response.read()
+        conn.close()
+        # print(data)
+        r = json.loads(data.decode())
+
+        # print('{} face(s) were found'.format(len(r)))
+
+        for face_info in r:
+            attributes = face_info['faceAttributes']
+            #print("Face Info ", attributes, '\n')
+            highest_emotion_index = np.argmax(list(attributes['emotion'].values()))
+            #print(highest_emotion_index)
+            info = "A {} of around {} years with a {} of {} percent".format(attributes['gender'],
+                                                                            attributes['age'],
+                                                                            list(attributes['emotion'].keys())[highest_emotion_index],
+                                                                           int(max(attributes['emotion'].values())*100))
+            # print(info)
+            # print(attributes['emotion'])
+            print(attributes['occlusion']) # eyeOccluded
+            for emotion, value in iter(attributes['emotion'].items()):
+                if value > 0.0:
+                    print(emotion)
+            # print(list(attributes['emotion'].keys())[highest_emotion_index])
+    except Exception as e:
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))
+
+
+# def load_img_local():
+headers = {'Content-Type': 'application/octet-stream',
+           'Ocp-Apim-Subscription-Key': 'cd91c79a18534dc58d7eae4608ea3d3d'}
+url = 'https://westeurope.api.cognitive.microsoft.com/face/v1.0/detect'
+
+# Gets the binary file data so we can send it to MCS
+data = open('/Users/lirongzhang/Hackathon/testing_photos/angry.jpg', 'rb')
+# print(len(data))
+r=requests.post(url, headers=headers, data=data)
+# print(r.text)
+
+# Set up with image
+# body_url_image(url='https://pbs.twimg.com/profile_images/1062098998746644480/JTIpfWME_400x400.jpg')
+
+# body_url_image(url='https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/hires/2015/prelecturedi.jpg') # confused
+# {'anger': 0.0, 'contempt': 0.001, 'disgust': 0.0, 'fear': 0.0, 'happiness': 0.0, 'neutral': 0.926, 'sadness': 0.073, 'surprise': 0.0}
+# body_url_image(url='https://www.israel21c.org/wp-content/uploads/2017/11/shutterstock_716873425-1000x657.jpg')  # asleep
+
+# set up headers
+# change_headers(contentType='application/json', api='computer_vision')
+# Calling Functions
+# describe_image(body, number_of_descriptions=3)
+# analyze_image(body)
+# print(body)
+# detect_objects(body)
+# change_headers(contentType='application/json', api='face_api')
+# change_headers(contentType='application/octet-stream', api='face_api')
+detect_face(body)
