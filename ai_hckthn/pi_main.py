@@ -39,9 +39,39 @@ def create_cont(container_name):
         print(e)
 
 
+def speech_to_text(path_to_wav, language='en-US'):
+    '''Input a wav file, returns text
+    lang: en-US, de-DE, es-MX, ru-RU, pt-PT'''
+    global speech_result
+    with open("{}".format(path_to_wav), mode="rb") as audio_file:
+        audio_data =  audio_file.read()
+    type(audio_data)
+    # Now that we have a token, we can set up the request
+    speechToTextEndPoint = "https://westeurope.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1"
+    headers = {"Content-type": "audio/wav; codec=audio/pcm; samplerate=16000", 
+            "Authorization": "Bearer " + accesstoken}
+    params = {"language":language}
+    body = audio_data
+
+    # Connect to server, post the request, and get the result
+    response = requests.post(speechToTextEndPoint,data=body, params=params, headers=headers)
+    result = str(response.text)
+    speech_result = json.loads(result)['DisplayText']
+    print(speech_result)
+
+
+
 # _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 # For blob storage
 def_credentials('g0X13X1yu1h7sE0c/Hu6DR88b1J+MqIKqVteexoc82SUsVBdwl6dNzaaNUXZRfVCcXWUYs1qC4/nx1hO+lS6Iw==')
+
+# Request token
+speech_headers = {'Content-Type': 'applications/json',
+            'Ocp-Apim-Subscription-Key': 'd3015735e75546cd9af885976b8e4c54'}
+
+response = requests.post('https://westeurope.api.cognitive.microsoft.com/sts/v1.0/issueToken', headers=speech_headers)
+accesstoken = str(response.text)
+
 
 # START
 
@@ -49,12 +79,14 @@ def_credentials('g0X13X1yu1h7sE0c/Hu6DR88b1J+MqIKqVteexoc82SUsVBdwl6dNzaaNUXZRfV
 dt_string = time.strftime('%Y%m%d-%H%M%S', time.gmtime())
 audio_container = dt_string+'-audio'
 image_container = dt_string+'-image'
+transcripts_container = dt_string +'-transcripts'
 
 print('Audio container for this session: {}'.format(audio_container))
 print('Image container for this session: {}'.format(image_container))
 
 create_cont(audio_container)
 create_cont(image_container)
+create_cont(transcripts_container)
 
 # INIT LOOP VARIABLES
 audio_count = 0
@@ -79,6 +111,9 @@ while True:
         audio_uploadName = audio_name # previously used name on Pi
         audio_timeDif = now - audio_time
         audio_serverName = time.strftime('%Y%m%d-%H%M%S.wav', audio_gmtime)
+
+        # transcript_serverName
+        transcript_serverName = time.strftime('%Y%m%d-%H%M%S.transcript', audio_gmtime)
         # Start recording the next
         audio_name = '{}.wav'.format('B' if audio_count%2 else 'A')
         audio_time = now
@@ -88,6 +123,11 @@ while True:
         if audio_count != 0:
             # Upload the previous
             blob_upload(audio_container, audio_serverName, audio_uploadName)
+            speech_to_text(audio_uploadName)
+            file = open(“temp.transcript”,”w”)
+            file.write(speech_result)
+            file.close()
+            blob_upload(transcripts_container, transcript_serverName, "temp.transcript") 
             print('Audio {:4} done. {} {:6.3f} s'.format(audio_count, audio_serverName, audio_timeDif))
         audio_count = audio_count + 1
 
@@ -112,3 +152,8 @@ while True:
         image_count = image_count + 1
 
     time.sleep(0.002) # Reduces processor usage
+
+
+# _ _ _ _ 
+
+
