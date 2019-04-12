@@ -16,7 +16,7 @@ import os
 if True: 
     # URL
     contentType = 'application/json'
-    body = "{'url':'https://upload.wikimedia.org/wikipedia/commons/1/12/Broadway_and_Times_Square_by_night.jpg'}"
+    body = "{'url':'image link here'}"
 # For RaspberryPI ( set the if to False and specify a correct path in the Pi to save the image)
 # it will take a temporary picture and send as binary file
 else:
@@ -32,7 +32,7 @@ else:
 headers = {
     # Request headers
     'Content-Type': contentType,
-    'Ocp-Apim-Subscription-Key': '288a5ff36384430da7dd849957c8540e'
+    'Ocp-Apim-Subscription-Key': 'a83b038ae8c14c85929d5bba098933c8'
 }
 
 
@@ -106,11 +106,8 @@ def analyze_image(img, visualFeatures='Description, Categories, Faces'):
         r = json.loads(data.decode())
 
         # Handling Response in some useful manner. JSON has a lot of keys.
-        if r['faces'] == []:
-            print('No faces encountered')
-        else:
-            print('At least a face was detected')
-        print("Category of image: {}".format(r['categories'][0]['name']))
+        # if r['faces'] == []:
+        #    print('No faces encountered')
         
         # extracting tags
         print("Tags found in the image {}".format(r['description']['tags']))

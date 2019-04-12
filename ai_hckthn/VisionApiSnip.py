@@ -6,17 +6,17 @@ import http.client, urllib.request, urllib.parse, urllib.error, base64
 if False:
     # URL
     contentType = 'application/json'
-    body = "{'url':'https://upload.wikimedia.org/wikipedia/commons/1/12/Broadway_and_Times_Square_by_night.jpg'}"
+    body = "{'url':'image link heres'}"
 else:
     # LOCAL FILE
     contentType = 'application/octet-stream'
-    body = open('wacky.jpeg', 'rb')
+    body = open('wacky.jpg', 'rb')
 
 
 headers = {
     # Request headers
     'Content-Type': contentType,
-    'Ocp-Apim-Subscription-Key': '288a5ff36384430da7dd849957c8540e',
+    'Ocp-Apim-Subscription-Key': 'a83b038ae8c14c85929d5bba098933c8',
 }
 
 params = urllib.parse.urlencode({
