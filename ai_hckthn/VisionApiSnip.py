@@ -6,7 +6,7 @@ import http.client, urllib.request, urllib.parse, urllib.error, base64
 if False:
     # URL
     contentType = 'application/json'
-    body = "{'url':'https://imgur.com/a/X7r4xmJ.jpg'}"
+    body = "{'url':'image link heres'}"
 else:
     # LOCAL FILE
     contentType = 'application/octet-stream'
