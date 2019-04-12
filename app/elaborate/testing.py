@@ -1,7 +1,7 @@
 import os, uuid, sys
 from azure.storage.blob import BlockBlobService, PublicAccess
 
-from blobcontrol import *
+from ../blobcontrol import *
 
 def_credentials('g0X13X1yu1h7sE0c/Hu6DR88b1J+MqIKqVteexoc82SUsVBdwl6dNzaaNUXZRfVCcXWUYs1qC4/nx1hO+lS6Iw==')
 
