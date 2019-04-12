@@ -60,53 +60,55 @@ create_cont(image_container)
 audio_count = 0
 audio_name = ''
 audio_time = 0
-audio_gmtime = 0
+audio_gmtime = time.gmtime()
 audio_proc = subprocess.Popen(['echo', 'start'])
 
 image_count = 0
 image_name = ''
 image_time = 0
-image_gmtime = 0
+image_gmtime = time.gmtime()
 image_proc = subprocess.Popen(['echo', 'start'])
 
 while True:
-    # The only issue with this
+    now = time.time()
+    
     if audio_proc.poll() != None:
         # Recording audio done!
         audio_proc.kill()
+        # Save details for later
+        audio_uploadName = audio_name # previously used name on Pi
+        audio_timeDif = now - audio_time
+        audio_serverName = time.strftime('%Y%m%d-%H%M%S.wav', audio_gmtime)
         # Start recording the next
-        upload_name = audio_name # previously used name on Pi
-        prev_time = audio_time
-        prev_gmtime = audio_gmtime
         audio_name = '{}.wav'.format('B' if audio_count%2 else 'A')
-        audio_time = time.time()
+        audio_time = now
         audio_gmtime = time.gmtime()
         audio_proc = subprocess.Popen(['arecord', '-f','S16_LE', '-c2', '-r','44100',  '-d', '{}'.format(AUDIO_INTERVAL), '{}'.format(audio_name)], shell=False)
 
         if audio_count != 0:
             # Upload the previous
-            server_name = time.strftime('%Y%m%d-%H%M%S.wav', prev_gmtime)
-            blob_upload(audio_container, server_name, upload_name)
-            print('Audio {:4} done. {} {:6.3f} s'.format(audio_count, server_name, audio_time - prev_time))
+            blob_upload(audio_container, audio_serverName, audio_uploadName)
+            print('Audio {:4} done. {} {:6.3f} s'.format(audio_count, audio_serverName, audio_timeDif))
         audio_count = audio_count + 1
+
     
-    if image_proc.poll() != None:
-        # Recording image done!
+    if (image_proc.poll() != None) and (now - image_time >= IMAGE_INTERVAL):
+        # Taking image done!
         image_proc.kill()
+        # Save details for later
+        image_uploadName = image_name # previously used name on Pi
+        image_timeDif = now - image_time
+        image_serverName = time.strftime('%Y%m%d-%H%M%S.jpg', image_gmtime)
         # Start recording the next
-        upload_name = image_name # previously used name on Pi
-        prev_time = image_time
-        prev_gmtime = image_gmtime
-        image_name = '{}.png'.format('B' if image_count%2 else 'A')
-        image_time = time.time()
+        image_name = '{}.wav'.format('B' if image_count%2 else 'A')
+        image_time = now
         image_gmtime = time.gmtime()
         image_proc = subprocess.Popen(["raspistill -o {}".format(image_name)],shell=True)
 
         if image_count != 0:
             # Upload the previous
-            server_name = time.strftime('%Y%m%d-%H%M%S.png', prev_gmtime)
-            blob_upload(image_container, server_name, upload_name)
-            print('image {:4} done. {} {:6.3f} s'.format(image_count, server_name, image_time - prev_time))
+            blob_upload(image_container, image_serverName, image_uploadName)
+            print('Image {:4} done. {} {:6.3f} s'.format(image_count, image_serverName, image_timeDif))
         image_count = image_count + 1
 
     time.sleep(0.002) # Reduces processor usage
