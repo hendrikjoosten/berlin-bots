@@ -85,16 +85,21 @@ accesstoken = str(response.text)
 
 # CREATE CONTAINERS FOR THE SESSION
 dt_string = time.strftime('%Y%m%d-%H%M%S', time.gmtime())
-audio_container = dt_string+'-audio'
-image_container = dt_string+'-image'
-transcripts_container = dt_string +'-transcripts'
+#audio_container = dt_string+'-audio'
+#image_container = dt_string+'-image'
+#transcripts_container = dt_string +'-transcripts'
 
 print('Audio container for this session: {}'.format(audio_container))
 print('Image container for this session: {}'.format(image_container))
 
-create_cont(audio_container)
-create_cont(image_container)
-create_cont(transcripts_container)
+# have been created already
+#create_cont('audio')
+#create_cont('image')
+#create_cont('trans')
+
+audio_container = 'audio'
+image_container = 'image'
+transcripts_container = 'trans'
 
 # INIT LOOP VARIABLES
 audio_count = 0
@@ -163,5 +168,3 @@ while True:
 
 
 # _ _ _ _ 
-
-
