@@ -6,7 +6,7 @@ import requests
 import numpy as np
 import time
 
-AUDIO_INTERVAL = 15 # seconds
+AUDIO_INTERVAL = 60 # seconds
 IMAGE_INTERVAL = 10
 
 # login and create the local blob control object...
@@ -42,7 +42,6 @@ def create_cont(container_name):
 def speech_to_text(path_to_wav, language='en-US'):
     '''Input a wav file, returns text
     lang: en-US, de-DE, es-MX, ru-RU, pt-PT'''
-    global speech_result
     with open("{}".format(path_to_wav), mode="rb") as audio_file:
         audio_data =  audio_file.read()
     type(audio_data)
@@ -56,8 +55,17 @@ def speech_to_text(path_to_wav, language='en-US'):
     # Connect to server, post the request, and get the result
     response = requests.post(speechToTextEndPoint,data=body, params=params, headers=headers)
     result = str(response.text)
-    speech_result = json.loads(result)['DisplayText']
-    print(speech_result)
+    speech_result = ''
+    try:
+        resultJson = json.loads(result)
+        speech_result = resultJson['DisplayText']
+        print('Recognized: ' + speech_result)
+    except:
+        print('Speech transcript result failed!')
+        print(resultJson)
+
+    return speech_result
+    
 
 
 
@@ -115,16 +123,16 @@ while True:
         # transcript_serverName
         transcript_serverName = time.strftime('%Y%m%d-%H%M%S.transcript', audio_gmtime)
         # Start recording the next
-        audio_name = '{}.wav'.format('B' if audio_count%2 else 'A')
+        audio_name = '{}.wav'.format('b' if audio_count%2 else 'a')
         audio_time = now
         audio_gmtime = time.gmtime()
-        audio_proc = subprocess.Popen(['arecord', '-f','S16_LE', '-c2', '-r','44100',  '-d', '{}'.format(AUDIO_INTERVAL), '{}'.format(audio_name)], shell=False)
+        audio_proc = subprocess.Popen(['arecord -f S16_LE -c2 -r 16000 -d {} {}'.format(AUDIO_INTERVAL, audio_name)], shell=True)
 
         if audio_count != 0:
             # Upload the previous
             blob_upload(audio_container, audio_serverName, audio_uploadName)
-            speech_to_text(audio_uploadName)
-            file = open(“temp.transcript”,”w”)
+            speech_result = speech_to_text(audio_uploadName)
+            file = open("temp.transcript","w")
             file.write(speech_result)
             file.close()
             blob_upload(transcripts_container, transcript_serverName, "temp.transcript") 
